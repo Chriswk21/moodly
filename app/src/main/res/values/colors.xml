@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Moodly Brand Colors -->
+    <color name="lavender_primary">#C8B6F0</color>
+    <color name="lavender_deep">#7663A8</color>
+    <color name="soft_blue">#DCEBFA</color>
+    <color name="background">#FAF9FC</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="blush_pink">#F5DCE7</color>
+    <color name="star_yellow">#FFE6A3</color>
+    <color name="text_dark">#34313D</color>
+    <color name="text_muted">#817D8A</color>
+
+    <!-- Stress Indicator Colors -->
+    <color name="stress_low">#B9DEC8</color>
+    <color name="stress_moderate">#F5D98D</color>
+    <color name="stress_high">#F2B58D</color>
+    <color name="stress_very_high">#E99A9A</color>
+</resources>
