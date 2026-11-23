@@ -96,144 +96,167 @@ private fun MoodCheckInContent(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp)
         ) {
-            // Momo Message Card
-            Card(
+            // Momo message
+            Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = LavenderPrimary.copy(alpha = 0.15f))
+                shape = RoundedCornerShape(24.dp),
+                color = Surface,
+                border = androidx.compose.foundation.BorderStroke(
+                    1.dp,
+                    LavenderPrimary.copy(alpha = 0.3f)
+                ),
+                shadowElevation = 4.dp
             ) {
                 Row(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(start = 16.dp, end = 14.dp, top = 16.dp, bottom = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    MomoMascot(
-                        expression = getMomoExpressionForMood(uiState.selectedMood),
-                        size = 50.dp,
-                        animated = false
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Momo says",
+                            text = "MOMO SAYS",
                             style = MaterialTheme.typography.labelSmall,
-                            color = LavenderDeep
+                            color = LavenderDeep,
+                            fontWeight = FontWeight.SemiBold
                         )
+                        Spacer(modifier = Modifier.height(6.dp))
                         Text(
                             text = "\"${uiState.momoMessage}\"",
                             style = MaterialTheme.typography.bodyMedium,
                             color = TextDark
                         )
                     }
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            // Mood Selection
-            Text(
-                text = "How are you feeling today?",
-                style = MaterialTheme.typography.titleMedium,
-                color = TextDark,
-                fontWeight = FontWeight.SemiBold
-            )
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            // Mood Grid (2 rows x 3 columns)
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    MoodOption(
-                        moodType = MoodType.HAPPY,
-                        isSelected = uiState.selectedMood == MoodType.HAPPY,
-                        onClick = { onAction(MoodCheckInAction.SelectMood(MoodType.HAPPY)) },
-                        modifier = Modifier.weight(1f)
-                    )
-                    MoodOption(
-                        moodType = MoodType.CALM,
-                        isSelected = uiState.selectedMood == MoodType.CALM,
-                        onClick = { onAction(MoodCheckInAction.SelectMood(MoodType.CALM)) },
-                        modifier = Modifier.weight(1f)
-                    )
-                    MoodOption(
-                        moodType = MoodType.NEUTRAL,
-                        isSelected = uiState.selectedMood == MoodType.NEUTRAL,
-                        onClick = { onAction(MoodCheckInAction.SelectMood(MoodType.NEUTRAL)) },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    MoodOption(
-                        moodType = MoodType.ANXIOUS,
-                        isSelected = uiState.selectedMood == MoodType.ANXIOUS,
-                        onClick = { onAction(MoodCheckInAction.SelectMood(MoodType.ANXIOUS)) },
-                        modifier = Modifier.weight(1f)
-                    )
-                    MoodOption(
-                        moodType = MoodType.SAD,
-                        isSelected = uiState.selectedMood == MoodType.SAD,
-                        onClick = { onAction(MoodCheckInAction.SelectMood(MoodType.SAD)) },
-                        modifier = Modifier.weight(1f)
-                    )
-                    MoodOption(
-                        moodType = MoodType.STRESSED,
-                        isSelected = uiState.selectedMood == MoodType.STRESSED,
-                        onClick = { onAction(MoodCheckInAction.SelectMood(MoodType.STRESSED)) },
-                        modifier = Modifier.weight(1f)
+                    Spacer(modifier = Modifier.width(12.dp))
+                    MomoMascot(
+                        expression = getMomoExpressionForMood(uiState.selectedMood),
+                        size = 68.dp,
+                        animated = false
                     )
                 }
             }
             
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             
-            // Mood Rating
-            Row(
+            // Mood selection card
+            Surface(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                shape = RoundedCornerShape(24.dp),
+                color = Surface,
+                shadowElevation = 4.dp
             ) {
-                Text(
-                    text = "Mood Rating",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = TextDark,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Text(
-                    text = "${uiState.moodRating} — ${uiState.moodRating.toMoodRatingLabel()}",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = LavenderDeep
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(12.dp))
-            
-            // Rating Selector (1-5)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                (1..5).forEach { rating ->
-                    RatingButton(
-                        rating = rating,
-                        isSelected = uiState.moodRating == rating,
-                        onClick = { onAction(MoodCheckInAction.SetRating(rating)) },
-                        modifier = Modifier.weight(1f)
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "How are you feeling today?",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TextDark,
+                        fontWeight = FontWeight.SemiBold
                     )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            MoodOption(
+                                moodType = MoodType.HAPPY,
+                                isSelected = uiState.selectedMood == MoodType.HAPPY,
+                                onClick = { onAction(MoodCheckInAction.SelectMood(MoodType.HAPPY)) },
+                                modifier = Modifier.weight(1f)
+                            )
+                            MoodOption(
+                                moodType = MoodType.CALM,
+                                isSelected = uiState.selectedMood == MoodType.CALM,
+                                onClick = { onAction(MoodCheckInAction.SelectMood(MoodType.CALM)) },
+                                modifier = Modifier.weight(1f)
+                            )
+                            MoodOption(
+                                moodType = MoodType.NEUTRAL,
+                                isSelected = uiState.selectedMood == MoodType.NEUTRAL,
+                                onClick = { onAction(MoodCheckInAction.SelectMood(MoodType.NEUTRAL)) },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            MoodOption(
+                                moodType = MoodType.ANXIOUS,
+                                isSelected = uiState.selectedMood == MoodType.ANXIOUS,
+                                onClick = { onAction(MoodCheckInAction.SelectMood(MoodType.ANXIOUS)) },
+                                modifier = Modifier.weight(1f)
+                            )
+                            MoodOption(
+                                moodType = MoodType.SAD,
+                                isSelected = uiState.selectedMood == MoodType.SAD,
+                                onClick = { onAction(MoodCheckInAction.SelectMood(MoodType.SAD)) },
+                                modifier = Modifier.weight(1f)
+                            )
+                            MoodOption(
+                                moodType = MoodType.STRESSED,
+                                isSelected = uiState.selectedMood == MoodType.STRESSED,
+                                onClick = { onAction(MoodCheckInAction.SelectMood(MoodType.STRESSED)) },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
                 }
             }
             
-            Row(
+            Spacer(modifier = Modifier.height(20.dp))
+            
+            // Mood rating card
+            Surface(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                shape = RoundedCornerShape(24.dp),
+                color = Surface,
+                shadowElevation = 4.dp
             ) {
-                Text("Very low", style = MaterialTheme.typography.labelSmall, color = TextMuted)
-                Text("Okay", style = MaterialTheme.typography.labelSmall, color = TextMuted)
-                Text("Very good", style = MaterialTheme.typography.labelSmall, color = TextMuted)
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Mood Rating",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextDark,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = "${uiState.moodRating} — ${uiState.moodRating.toMoodRatingLabel()}",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = LavenderDeep
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        (1..5).forEach { rating ->
+                            RatingButton(
+                                rating = rating,
+                                isSelected = uiState.moodRating == rating,
+                                onClick = { onAction(MoodCheckInAction.SetRating(rating)) },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("Very low", style = MaterialTheme.typography.labelSmall, color = TextMuted)
+                        Text("Okay", style = MaterialTheme.typography.labelSmall, color = TextMuted)
+                        Text("Very good", style = MaterialTheme.typography.labelSmall, color = TextMuted)
+                    }
+                }
             }
             
             Spacer(modifier = Modifier.height(28.dp))
@@ -395,11 +418,12 @@ private fun MoodOption(
                 .padding(vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = getMoodEmoji(moodType),
-                fontSize = 28.sp
+            MomoMascot(
+                expression = getMomoExpressionForMood(moodType),
+                size = 52.dp,
+                animated = false
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = moodType.displayName,
                 style = MaterialTheme.typography.labelMedium,
@@ -498,10 +522,10 @@ private fun getMoodEmoji(moodType: MoodType): String = when (moodType) {
 private fun getMomoExpressionForMood(mood: MoodType?): MomoExpression = when (mood) {
     MoodType.HAPPY -> MomoExpression.HAPPY
     MoodType.CALM -> MomoExpression.CALM
-    MoodType.NEUTRAL -> MomoExpression.CALM
+    MoodType.NEUTRAL -> MomoExpression.SLEEPY
     MoodType.ANXIOUS -> MomoExpression.WORRIED
     MoodType.SAD -> MomoExpression.SAD
-    MoodType.STRESSED -> MomoExpression.WORRIED
+    MoodType.STRESSED -> MomoExpression.STRESSED
     null -> MomoExpression.CALM
 }
 
