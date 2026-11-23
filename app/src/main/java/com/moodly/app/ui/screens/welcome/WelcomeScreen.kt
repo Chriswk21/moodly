@@ -1,7 +1,9 @@
 package com.moodly.app.ui.screens.welcome
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -40,32 +42,33 @@ fun WelcomeScreen(
     ) {
         Spacer(modifier = Modifier.height(32.dp))
         
-        // App Name with Star
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "✦",
-                fontSize = 24.sp,
-                color = StarYellow
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Moodly",
-                style = MaterialTheme.typography.headlineLarge,
-                color = LavenderDeep,
-                fontWeight = FontWeight.Bold
-            )
-        }
+        // App name
+        Text(
+            text = "Moodly",
+            style = MaterialTheme.typography.headlineLarge,
+            color = LavenderDeep,
+            fontWeight = FontWeight.ExtraBold
+        )
         
         Spacer(modifier = Modifier.weight(0.3f))
         
-        // Momo Mascot
-        MomoMascot(
-            expression = MomoExpression.HAPPY,
-            size = 180.dp
-        )
+        // Momo in a soft circular frame
+        Box(
+            modifier = Modifier
+                .size(228.dp)
+                .background(Surface.copy(alpha = 0.48f), CircleShape)
+                .border(
+                    width = 1.dp,
+                    color = LavenderPrimary.copy(alpha = 0.32f),
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            MomoMascot(
+                expression = MomoExpression.HAPPY,
+                size = 176.dp
+            )
+        }
         
         Spacer(modifier = Modifier.height(16.dp))
         
@@ -77,7 +80,7 @@ fun WelcomeScreen(
                 .padding(horizontal = 20.dp, vertical = 10.dp)
         ) {
             Text(
-                text = "Hi! I'm Momo ✨",
+                text = "Hi! I'm Momo",
                 style = MaterialTheme.typography.bodyLarge,
                 color = LavenderDeep,
                 fontWeight = FontWeight.Medium
