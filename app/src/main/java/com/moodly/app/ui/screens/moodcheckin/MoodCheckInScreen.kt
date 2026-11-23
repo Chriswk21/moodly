@@ -62,8 +62,11 @@ private fun MoodCheckInContent(
     modifier: Modifier = Modifier
 ) {
     Scaffold(
+        // Outer app Scaffold already applies system bar insets
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             CenterAlignedTopAppBar(
+                windowInsets = WindowInsets(0, 0, 0, 0),
                 title = {
                     Text(
                         text = "Daily Check-in",

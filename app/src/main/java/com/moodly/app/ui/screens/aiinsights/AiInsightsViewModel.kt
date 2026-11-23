@@ -259,7 +259,8 @@ class AiInsightsViewModel @Inject constructor(
             MoodTrend.DECREASING -> "show a downward trend"
         }
         val workloadText = if (tasksDueSoon > 0) {
-            "while $tasksDueSoon task deadline(s) are approaching. Your academic workload may be contributing to this pattern."
+            val deadlines = if (tasksDueSoon == 1) "a task deadline is" else "$tasksDueSoon task deadlines are"
+            "while $deadlines approaching. Your academic workload may be contributing to this pattern."
         } else {
             "and no deadlines are due in the next few days."
         }

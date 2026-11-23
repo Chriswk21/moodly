@@ -1,5 +1,7 @@
 package com.moodly.app.ui.screens.tasks
 
+import com.moodly.app.ui.components.moodlySoftShadow
+
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -12,9 +14,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.text.style.TextAlign
+import com.moodly.app.ui.components.MomoExpression
+import com.moodly.app.ui.components.MomoMascot
+import java.time.LocalDate
+import java.util.Locale
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,19 +76,12 @@ private fun TasksContent(
     onNavigateToEditTask: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var selectedFilter by remember { mutableStateOf(TaskFilter.ALL) }
-    var isListView by remember { mutableStateOf(true) }
+    var selectedFilter by rememberSaveable { mutableStateOf(TaskFilter.ALL) }
+    var isListView by rememberSaveable { mutableStateOf(true) }
     
     Scaffold(
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = onNavigateToAddTask,
-                containerColor = LavenderDeep,
-                contentColor = Color.White,
-                icon = { Icon(Icons.Filled.Add, contentDescription = null) },
-                text = { Text("Add Task") }
-            )
-        },
+        // Outer app Scaffold already applies system bar insets
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         containerColor = Background
     ) { innerPadding ->
         Column(
@@ -90,7 +92,7 @@ private fun TasksContent(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
             
-            // Header
+            // Header: title + counts on the left, Add Task pill on the right
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -103,79 +105,70 @@ private fun TasksContent(
                         color = TextDark,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(
-                        text = "${uiState.pendingCount} pending · ${uiState.completedCount} completed",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = TextMuted
-                    )
+                    Row {
+                        Text(
+                            text = "${uiState.pendingCount} pending",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = LavenderDeep,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = " · ${uiState.completedCount} completed",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextMuted
+                        )
+                    }
+                }
+                
+                Button(
+                    onClick = onNavigateToAddTask,
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = LavenderDeep),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp)
+                ) {
+                    Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Add Task", fontWeight = FontWeight.SemiBold)
                 }
             }
             
             Spacer(modifier = Modifier.height(16.dp))
             
-            // View Toggle (List / Calendar)
-            Row(
+            // Segmented toggle: Task List / Schedule Agenda
+            Surface(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                shape = RoundedCornerShape(14.dp),
+                color = Surface,
+                border = androidx.compose.foundation.BorderStroke(1.dp, AgendaTileBorder)
             ) {
-                Surface(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable { isListView = true },
-                    shape = RoundedCornerShape(12.dp),
-                    color = if (isListView) LavenderPrimary else Surface,
-                    tonalElevation = if (isListView) 0.dp else 2.dp
-                ) {
-                    Row(
-                        modifier = Modifier.padding(12.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.List,
-                            contentDescription = null,
-                            tint = if (isListView) LavenderDeep else TextMuted,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "Task List",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = if (isListView) LavenderDeep else TextMuted
-                        )
-                    }
-                }
-                
-                Surface(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable { isListView = false },
-                    shape = RoundedCornerShape(12.dp),
-                    color = if (!isListView) LavenderPrimary else Surface,
-                    tonalElevation = if (!isListView) 0.dp else 2.dp
-                ) {
-                    Row(
-                        modifier = Modifier.padding(12.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.CalendarMonth,
-                            contentDescription = null,
-                            tint = if (!isListView) LavenderDeep else TextMuted,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "Schedule Agenda",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = if (!isListView) LavenderDeep else TextMuted
-                        )
-                    }
+                Row(modifier = Modifier.padding(4.dp)) {
+                    ViewToggleOption(
+                        icon = Icons.AutoMirrored.Filled.List,
+                        label = "Task List",
+                        selected = isListView,
+                        onClick = { isListView = true },
+                        modifier = Modifier.weight(1f)
+                    )
+                    ViewToggleOption(
+                        icon = Icons.Filled.CalendarMonth,
+                        label = "Schedule Agenda",
+                        selected = !isListView,
+                        onClick = { isListView = false },
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
             
             Spacer(modifier = Modifier.height(12.dp))
+            
+            if (!isListView) {
+                ScheduleAgenda(
+                    tasks = uiState.tasks,
+                    onTaskClick = onNavigateToEditTask,
+                    modifier = Modifier.weight(1f)
+                )
+                return@Column
+            }
             
             // Filter Chips
             Row(
@@ -240,7 +233,7 @@ private fun TasksContent(
                         )
                     }
                     item {
-                        Spacer(modifier = Modifier.height(80.dp)) // Space for FAB
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
                 }
             }
@@ -258,12 +251,11 @@ private fun TaskListItem(
     val isCompleted = task.status == TaskStatus.COMPLETED
     
     Card(
-        modifier = modifier
+        modifier = modifier.moodlySoftShadow(RoundedCornerShape(16.dp), 6.dp)
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        colors = CardDefaults.cardColors(containerColor = Surface)
     ) {
         Row(
             modifier = Modifier
@@ -344,7 +336,7 @@ private fun TaskListItem(
                 // Priority chip
                 Surface(
                     shape = RoundedCornerShape(8.dp),
-                    color = getPriorityColor(task.priority).copy(alpha = 0.2f)
+                    color = getPriorityChipColor(task.priority)
                 ) {
                     Text(
                         text = "• ${task.priority.displayName}",
@@ -384,10 +376,283 @@ private fun getPriorityColor(priority: Priority): Color = when (priority) {
     Priority.HIGH -> PriorityHigh
 }
 
+// Darker text tones so priority labels stay readable on their pastel chips
 private fun getPriorityTextColor(priority: Priority): Color = when (priority) {
-    Priority.LOW -> StressLow
-    Priority.MEDIUM -> LavenderDeep
-    Priority.HIGH -> StressHigh
+    Priority.LOW -> Color(0xFF4E8A66)
+    Priority.MEDIUM -> Color(0xFF9A7A1E)
+    Priority.HIGH -> Color(0xFFB8673A)
+}
+
+private fun getPriorityChipColor(priority: Priority): Color = when (priority) {
+    Priority.LOW -> StressLow.copy(alpha = 0.45f)
+    Priority.MEDIUM -> StressModerate.copy(alpha = 0.45f)
+    Priority.HIGH -> StressHigh.copy(alpha = 0.4f)
+}
+
+private val AgendaTile = Color(0xFFF7F5FB)
+private val AgendaTileBorder = Color(0xFFE9E3F5)
+private val TodayTile = Color(0xFFEEF5FD)
+private val TodayTileBorder = Color(0xFFCFE2F7)
+private val DueDot = Color(0xFFF0A27A)
+
+@Composable
+private fun ViewToggleOption(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val bg by animateColorAsState(
+        targetValue = if (selected) Color(0xFFEDE7FA) else Color.Transparent,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label = "toggle_bg"
+    )
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(10.dp))
+            .background(bg)
+            .clickable(onClick = onClick)
+            .padding(vertical = 10.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = if (selected) LavenderDeep else TextMuted,
+            modifier = Modifier.size(16.dp)
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = if (selected) LavenderDeep else TextMuted,
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
+        )
+    }
+}
+
+/**
+ * 7-day agenda starting today. The selected day (default: today) and all following
+ * days in the window are listed, so you see what's coming up from that day on.
+ * Only unfinished tasks are shown; overdue ones appear first when today is selected.
+ */
+@Composable
+private fun ScheduleAgenda(
+    tasks: List<Task>,
+    onTaskClick: (Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val today = remember { LocalDate.now() }
+    val days = remember(today) { (0..6).map { today.plusDays(it.toLong()) } }
+    val windowEnd = days.last()
+    var selectedDay by rememberSaveable { mutableStateOf(today.toEpochDay()) }
+    val selectedDate = LocalDate.ofEpochDay(selectedDay)
+    
+    val pending = remember(tasks) {
+        tasks.filter { it.status != TaskStatus.COMPLETED }.sortedBy { it.dueDate }
+    }
+    val daysWithTasks = remember(pending) { pending.map { it.dueDate.toLocalDate() }.toSet() }
+    val overdue = if (selectedDate == today) pending.filter { it.dueDate.toLocalDate() < today } else emptyList()
+    val agenda = pending.filter {
+        val d = it.dueDate.toLocalDate()
+        d >= selectedDate && d <= windowEnd
+    }
+    val monthLabel = selectedDate.format(DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH))
+    
+    Card(
+        modifier = modifier.moodlySoftShadow(RoundedCornerShape(16.dp), 6.dp).fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Surface)
+    ) {
+        LazyColumn(
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            item(key = "header") {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "$monthLabel · Upcoming Agenda",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = TextDark,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = "7-Day View",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = LavenderDeep
+                    )
+                }
+            }
+            
+            item(key = "days") {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    days.forEach { day ->
+                        DayChip(
+                            date = day,
+                            selected = day == selectedDate,
+                            hasTasks = day in daysWithTasks,
+                            onClick = { selectedDay = day.toEpochDay() },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            }
+            
+            if (overdue.isEmpty() && agenda.isEmpty()) {
+                item(key = "empty") {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        MomoMascot(expression = MomoExpression.HAPPY, size = 72.dp, animated = false)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Nothing due from here to ${windowEnd.format(DateTimeFormatter.ofPattern("EEE, MMM d", Locale.ENGLISH))}.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextMuted,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+            
+            items(items = overdue, key = { "overdue-${it.id}" }) { task ->
+                AgendaItem(task = task, label = "Overdue", onClick = { onTaskClick(task.id) })
+            }
+            
+            items(items = agenda, key = { "agenda-${it.id}" }) { task ->
+                val isToday = task.dueDate.toLocalDate() == today
+                AgendaItem(
+                    task = task,
+                    label = if (isToday) "TODAY · DUE ${task.dueDate.format(DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH))}"
+                            else formatDueDate(task.dueDate),
+                    highlightToday = isToday,
+                    onClick = { onTaskClick(task.id) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DayChip(
+    date: LocalDate,
+    selected: Boolean,
+    hasTasks: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val bg by animateColorAsState(
+        targetValue = if (selected) LavenderDeep else AgendaTile,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label = "day_bg"
+    )
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(bg)
+            .clickable(onClick = onClick)
+            .padding(vertical = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = date.dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH),
+            style = MaterialTheme.typography.labelSmall,
+            color = if (selected) Color.White.copy(alpha = 0.85f) else TextMuted
+        )
+        Text(
+            text = date.dayOfMonth.toString(),
+            style = MaterialTheme.typography.titleSmall,
+            color = if (selected) Color.White else TextDark,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        // Dot marks days with a deadline; keep the space so chips stay the same height
+        Box(
+            modifier = Modifier
+                .size(5.dp)
+                .clip(CircleShape)
+                .background(if (hasTasks && !selected) DueDot else if (hasTasks) Color.White else Color.Transparent)
+        )
+    }
+}
+
+@Composable
+private fun AgendaItem(
+    task: Task,
+    label: String,
+    onClick: () -> Unit,
+    highlightToday: Boolean = false
+) {
+    Surface(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        color = if (highlightToday) TodayTile else AgendaTile,
+        border = androidx.compose.foundation.BorderStroke(
+            1.dp, if (highlightToday) TodayTileBorder else AgendaTileBorder
+        )
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = when {
+                        label == "Overdue" -> Color(0xFFC0504D)
+                        highlightToday -> Color(0xFF2F6FA8)
+                        else -> LavenderDeep
+                    },
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = task.title,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = TextDark,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (task.course != null) {
+                    Text(
+                        text = task.course,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = TextMuted,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = getPriorityChipColor(task.priority)
+            ) {
+                Text(
+                    text = "• ${task.priority.displayName}",
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = getPriorityTextColor(task.priority),
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)

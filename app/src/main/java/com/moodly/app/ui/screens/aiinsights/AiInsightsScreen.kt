@@ -1,5 +1,7 @@
 package com.moodly.app.ui.screens.aiinsights
 
+import com.moodly.app.ui.components.moodlySoftShadow
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -112,7 +114,7 @@ private fun AiInsightsContent(
         
         if (!uiState.hasEnoughData) {
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.moodlySoftShadow(RoundedCornerShape(16.dp), 6.dp).fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = Surface)
             ) {
@@ -352,7 +354,7 @@ private fun StatCard(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.moodlySoftShadow(RoundedCornerShape(16.dp), 6.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Surface)
     ) {
@@ -392,7 +394,7 @@ private fun WeeklyMoodTrendSection(
     dailyRatings: List<Float?>
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.moodlySoftShadow(RoundedCornerShape(16.dp), 6.dp).fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Surface)
     ) {
@@ -498,7 +500,7 @@ private fun WeeklyMoodTrendSection(
 @Composable
 private fun AiPatternInsightSection(insight: String) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.moodlySoftShadow(RoundedCornerShape(16.dp), 6.dp).fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Surface)
     ) {
@@ -530,7 +532,7 @@ private val InnerTileBorder = Color(0xFFE9E3F5)
 @Composable
 private fun PotentialContributorsSection(contributors: List<StressContributor>) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.moodlySoftShadow(RoundedCornerShape(16.dp), 6.dp).fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Surface)
     ) {
@@ -572,7 +574,7 @@ private fun PotentialContributorsSection(contributors: List<StressContributor>) 
 @Composable
 private fun SuggestedNextStepsSection(steps: List<String>) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.moodlySoftShadow(RoundedCornerShape(16.dp), 6.dp).fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Surface)
     ) {

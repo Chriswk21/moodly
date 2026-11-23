@@ -1,5 +1,7 @@
 package com.moodly.app.ui.screens.profile
 
+import com.moodly.app.ui.components.moodlySoftShadow
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -53,7 +55,7 @@ fun ProfileScreen(
         
         // User Profile Card
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.moodlySoftShadow(RoundedCornerShape(16.dp), 6.dp).fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = Surface)
         ) {
@@ -119,7 +121,7 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.height(12.dp))
         
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.moodlySoftShadow(RoundedCornerShape(16.dp), 6.dp).fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = Surface)
         ) {
@@ -170,7 +172,7 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.height(12.dp))
         
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.moodlySoftShadow(RoundedCornerShape(16.dp), 6.dp).fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = Surface)
         ) {

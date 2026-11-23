@@ -68,8 +68,11 @@ private fun AddEditTaskContent(
     var showTimePicker by remember { mutableStateOf(false) }
     
     Scaffold(
+        // Outer app Scaffold already applies system bar insets
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             CenterAlignedTopAppBar(
+                windowInsets = WindowInsets(0, 0, 0, 0),
                 title = {
                     Text(
                         text = if (isEditing) "Edit Task" else "New Task",

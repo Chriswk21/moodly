@@ -1,5 +1,7 @@
 package com.moodly.app.ui.screens.moodhistory
 
+import com.moodly.app.ui.components.moodlySoftShadow
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -61,8 +63,11 @@ private fun MoodHistoryContent(
     modifier: Modifier = Modifier
 ) {
     Scaffold(
+        // Outer app Scaffold already applies system bar insets
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             CenterAlignedTopAppBar(
+                windowInsets = WindowInsets(0, 0, 0, 0),
                 title = {
                     Text(
                         text = "Mood History & Trends",
@@ -159,7 +164,7 @@ private fun MoodHistoryContent(
             if (uiState.recentCheckIns.isEmpty()) {
                 item {
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.moodlySoftShadow(RoundedCornerShape(16.dp), 6.dp).fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         colors = CardDefaults.cardColors(containerColor = Surface)
                     ) {
@@ -199,7 +204,7 @@ private fun MoodTrendCard(
     dailyRatings: List<Float>
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.moodlySoftShadow(RoundedCornerShape(16.dp), 6.dp).fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Surface)
     ) {
@@ -268,7 +273,7 @@ private fun MoodTrendCard(
 @Composable
 private fun StressTrendCard(dailyStress: List<StressDay>) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.moodlySoftShadow(RoundedCornerShape(16.dp), 6.dp).fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Surface)
     ) {
@@ -361,7 +366,7 @@ private fun CalendarCard(
     selectedDate: Int?
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.moodlySoftShadow(RoundedCornerShape(16.dp), 6.dp).fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Surface)
     ) {
@@ -457,7 +462,7 @@ private fun CalendarCard(
 @Composable
 private fun MoodEntryCard(entry: MoodEntry) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.moodlySoftShadow(RoundedCornerShape(16.dp), 6.dp).fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Surface)
     ) {
