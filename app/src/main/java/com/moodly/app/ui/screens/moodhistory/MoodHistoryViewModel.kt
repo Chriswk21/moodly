@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.moodly.app.data.repository.MoodRepository
 import com.moodly.app.di.IoDispatcher
 import com.moodly.app.domain.model.MoodEntry
+import com.moodly.app.domain.model.MoodType
 import com.moodly.app.ui.theme.StressHigh
 import com.moodly.app.ui.theme.StressLow
 import com.moodly.app.ui.theme.StressModerate
@@ -33,7 +34,8 @@ data class MoodHistoryUiState(
     val calendarYear: Int = LocalDate.now().year,
     val calendarMonth: String = LocalDate.now().month.getDisplayName(TextStyle.FULL, Locale.ENGLISH),
     val checkInsCount: Int = 0,
-    val moodEntryDates: Set<Int> = emptySet(),
+    /** Day of month -> mood of the latest check-in on that day. */
+    val moodEntryDates: Map<Int, MoodType> = emptyMap(),
     val selectedDate: Int? = LocalDate.now().dayOfMonth,
     val recentCheckIns: List<MoodEntry> = emptyList(),
     val isLoading: Boolean = true
@@ -105,7 +107,9 @@ class MoodHistoryViewModel @Inject constructor(
             }
             
             // Get dates with mood entries
-            val moodDates = entries.map { it.createdAt.dayOfMonth }.toSet()
+            val moodDates = entries
+                .groupBy { it.createdAt.dayOfMonth }
+                .mapValues { (_, dayEntries) -> dayEntries.maxBy { it.createdAt }.moodType }
             
             // Recent check-ins
             val recentEntries = entries.sortedByDescending { it.createdAt }.take(10)

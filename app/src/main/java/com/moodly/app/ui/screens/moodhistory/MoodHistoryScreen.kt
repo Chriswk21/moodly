@@ -362,7 +362,7 @@ private fun CalendarCard(
     year: Int,
     month: String,
     checkIns: Int,
-    moodEntryDates: Set<Int>,
+    moodEntryDates: Map<Int, MoodType>,
     selectedDate: Int?
 ) {
     Card(
@@ -405,58 +405,98 @@ private fun CalendarCard(
             
             Spacer(modifier = Modifier.height(8.dp))
             
-            // Calendar grid (simplified - showing first 3 weeks)
-            val weeks = listOf(
-                listOf(1, 2, 3, 4, 5, 6, 7),
-                listOf(8, 9, 10, 11, 12, 13, 14),
-                listOf(15, 16, 17, 18, 19, 20, 21)
-            )
+            // Full month grid, Sunday-first, with leading blanks
+            val monthValue = runCatching { java.time.Month.valueOf(month.uppercase(Locale.ENGLISH)) }
+                .getOrDefault(LocalDate.now().month)
+            val firstDay = LocalDate.of(year, monthValue, 1)
+            val leadingBlanks = firstDay.dayOfWeek.value % 7 // Sunday = 0
+            val cells: List<Int?> = List(leadingBlanks) { null } + (1..firstDay.lengthOfMonth()).toList()
             
-            weeks.forEach { week ->
+            cells.chunked(7).forEach { week ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp)
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     week.forEach { day ->
-                        val hasMood = day in moodEntryDates
-                        val isSelected = day == selectedDate
-                        
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .aspectRatio(1f)
-                                .padding(2.dp)
-                                .clip(CircleShape)
-                                .background(
-                                    when {
-                                        isSelected -> LavenderDeep
-                                        else -> Color.Transparent
-                                    }
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    text = day.toString(),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = if (isSelected) Color.White else TextDark
-                                )
-                                if (hasMood && !isSelected) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(4.dp)
-                                            .clip(CircleShape)
-                                            .background(StressHigh)
-                                    )
-                                }
-                            }
-                        }
+                        CalendarDayCell(
+                            day = day,
+                            mood = day?.let { moodEntryDates[it] },
+                            isSelected = day != null && day == selectedDate,
+                            modifier = Modifier.weight(1f)
+                        )
                     }
+                    // Pad the final week so cells keep the same width
+                    repeat(7 - week.size) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            // Legend
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally)
+            ) {
+                listOf(MoodType.HAPPY, MoodType.CALM, MoodType.SAD, MoodType.STRESSED).forEach { mood ->
+                    LegendItem(color = getMoodDotColor(mood), label = mood.displayName)
                 }
             }
         }
     }
+}
+
+@Composable
+private fun CalendarDayCell(
+    day: Int?,
+    mood: MoodType?,
+    isSelected: Boolean,
+    modifier: Modifier = Modifier
+) {
+    if (day == null) {
+        Spacer(modifier = modifier.aspectRatio(0.95f))
+        return
+    }
+    val shape = RoundedCornerShape(12.dp)
+    Box(
+        modifier = modifier
+            .aspectRatio(0.95f)
+            .clip(shape)
+            .background(if (isSelected) Color(0xFFF0EAFB) else Color(0xFFF8F7FB))
+            .then(
+                if (isSelected) Modifier.border(1.dp, LavenderDeep, shape) else Modifier
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = day.toString(),
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (isSelected) LavenderDeep else TextDark,
+                fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium
+            )
+            Spacer(modifier = Modifier.height(3.dp))
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .clip(CircleShape)
+                    .background(mood?.let { getMoodDotColor(it) } ?: Color.Transparent)
+            )
+        }
+    }
+}
+
+/** Stronger tints than the mood background colors so small dots stay visible. */
+private fun getMoodDotColor(moodType: MoodType): Color = when (moodType) {
+    MoodType.HAPPY -> Color(0xFFF5D06B)
+    MoodType.CALM -> Color(0xFF9FD3B5)
+    MoodType.NEUTRAL -> Color(0xFFA9C8EC)
+    MoodType.ANXIOUS -> Color(0xFFF2C26B)
+    MoodType.SAD -> Color(0xFFBFB3E6)
+    MoodType.STRESSED -> Color(0xFFF2A47A)
 }
 
 @Composable
